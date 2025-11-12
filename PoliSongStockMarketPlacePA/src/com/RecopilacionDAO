@@ -1,0 +1,251 @@
+package com.polisong.dao;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class RecopilacionDAO {
+    private static List<Map<String, Object>> recopilaciones = new ArrayList<>();
+    private static int nextId = 1;
+    
+    static {
+        // Recopilaciones de ejemplo
+        Map<String, Object> recopilacion1 = new HashMap<>();
+        recopilacion1.put("idRecopilacion", 1);
+        recopilacion1.put("idUsuario", 1);
+        recopilacion1.put("nombre", "Mis Favoritas 2024");
+        recopilacion1.put("esPublica", true);
+        recopilacion1.put("fechaCreacion", "2024-01-10");
+        recopilacion1.put("canciones", List.of(1, 2)); // IDs de MP3
+        
+        Map<String, Object> recopilacion2 = new HashMap<>();
+        recopilacion2.put("idRecopilacion", 2);
+        recopilacion2.put("idUsuario", 2);
+        recopilacion2.put("nombre", "Rock Clásico");
+        recopilacion2.put("esPublica", true);
+        recopilacion2.put("fechaCreacion", "2024-01-12");
+        recopilacion2.put("canciones", List.of(2, 4)); // IDs de MP3
+        
+        Map<String, Object> recopilacion3 = new HashMap<>();
+        recopilacion3.put("idRecopilacion", 3);
+        recopilacion3.put("idUsuario", 1);
+        recopilacion3.put("nombre", "Privada Personal");
+        recopilacion3.put("esPublica", false);
+        recopilacion3.put("fechaCreacion", "2024-01-15");
+        recopilacion3.put("canciones", List.of(1, 3)); // IDs de MP3
+        
+        recopilaciones.add(recopilacion1);
+        recopilaciones.add(recopilacion2);
+        recopilaciones.add(recopilacion3);
+        nextId = 4;
+    }
+    
+    public boolean crearRecopilacion(int idUsuario, String nombre, boolean esPublica) {
+        try {
+            Map<String, Object> recopilacion = new HashMap<>();
+            recopilacion.put("idRecopilacion", nextId++);
+            recopilacion.put("idUsuario", idUsuario);
+            recopilacion.put("nombre", nombre);
+            recopilacion.put("esPublica", esPublica);
+            recopilacion.put("fechaCreacion", java.time.LocalDate.now().toString());
+            recopilacion.put("canciones", new ArrayList<Integer>());
+            
+            recopilaciones.add(recopilacion);
+            System.out.println("✅ Recopilación creada: " + nombre);
+            return true;
+        } catch (Exception e) {
+            System.out.println("❌ Error al crear recopilación: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public void obtenerRecopilacionesPorUsuario(int idUsuario) {
+        System.out.println("\n--- MIS RECOPILACIONES ---");
+        boolean encontradas = false;
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idUsuario") == idUsuario) {
+                System.out.println(formatearRecopilacion(recopilacion));
+                encontradas = true;
+            }
+        }
+        if (!encontradas) {
+            System.out.println("No tienes recopilaciones creadas");
+        }
+    }
+    
+    public void obtenerRecopilacionesPublicas() {
+        System.out.println("\n--- RECOPILACIONES PÚBLICAS ---");
+        boolean encontradas = false;
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((boolean) recopilacion.get("esPublica")) {
+                System.out.println(formatearRecopilacion(recopilacion));
+                encontradas = true;
+            }
+        }
+        if (!encontradas) {
+            System.out.println("No hay recopilaciones públicas disponibles");
+        }
+    }
+    
+    public boolean agregarCancionARecopilacion(int idRecopilacion, int idMp3) {
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idRecopilacion") == idRecopilacion) {
+                @SuppressWarnings("unchecked")
+                List<Integer> canciones = (List<Integer>) recopilacion.get("canciones");
+                if (!canciones.contains(idMp3)) {
+                    canciones.add(idMp3);
+                    System.out.println("✅ Canción agregada a la recopilación");
+                    return true;
+                } else {
+                    System.out.println("⚠ La canción ya está en la recopilación");
+                    return false;
+                }
+            }
+        }
+        System.out.println("❌ Recopilación no encontrada");
+        return false;
+    }
+    
+    public boolean eliminarCancionDeRecopilacion(int idRecopilacion, int idMp3) {
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idRecopilacion") == idRecopilacion) {
+                @SuppressWarnings("unchecked")
+                List<Integer> canciones = (List<Integer>) recopilacion.get("canciones");
+                if (canciones.contains(Integer.valueOf(idMp3))) {
+                    canciones.remove(Integer.valueOf(idMp3));
+                    System.out.println("✅ Canción eliminada de la recopilación");
+                    return true;
+                } else {
+                    System.out.println("❌ La canción no está en la recopilación");
+                    return false;
+                }
+            }
+        }
+        System.out.println("❌ Recopilación no encontrada");
+        return false;
+    }
+    
+    public boolean eliminarRecopilacion(int idRecopilacion, int idUsuario) {
+        for (int i = 0; i < recopilaciones.size(); i++) {
+            Map<String, Object> recopilacion = recopilaciones.get(i);
+            if ((int) recopilacion.get("idRecopilacion") == idRecopilacion) {
+                if ((int) recopilacion.get("idUsuario") == idUsuario) {
+                    recopilaciones.remove(i);
+                    System.out.println("✅ Recopilación eliminada");
+                    return true;
+                } else {
+                    System.out.println("❌ No tienes permisos para eliminar esta recopilación");
+                    return false;
+                }
+            }
+        }
+        System.out.println("❌ Recopilación no encontrada");
+        return false;
+    }
+    
+    public Map<String, Object> buscarRecopilacionPorId(int idRecopilacion) {
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idRecopilacion") == idRecopilacion) {
+                return recopilacion;
+            }
+        }
+        return null;
+    }
+    
+    public List<Map<String, Object>> buscarRecopilacionesPorNombre(String nombre) {
+        List<Map<String, Object>> resultados = new ArrayList<>();
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            String nombreRecopilacion = (String) recopilacion.get("nombre");
+            if (nombreRecopilacion.toLowerCase().contains(nombre.toLowerCase()) && 
+                (boolean) recopilacion.get("esPublica")) {
+                resultados.add(recopilacion);
+            }
+        }
+        return resultados;
+    }
+    
+    public boolean cambiarVisibilidadRecopilacion(int idRecopilacion, int idUsuario, boolean esPublica) {
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idRecopilacion") == idRecopilacion) {
+                if ((int) recopilacion.get("idUsuario") == idUsuario) {
+                    recopilacion.put("esPublica", esPublica);
+                    String visibilidad = esPublica ? "pública" : "privada";
+                    System.out.println("✅ Recopilación marcada como " + visibilidad);
+                    return true;
+                } else {
+                    System.out.println("❌ No tienes permisos para modificar esta recopilación");
+                    return false;
+                }
+            }
+        }
+        System.out.println("❌ Recopilación no encontrada");
+        return false;
+    }
+    
+    public int obtenerTotalRecopilaciones() {
+        return recopilaciones.size();
+    }
+    
+    public int obtenerRecopilacionesPublicasCount() {
+        int count = 0;
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((boolean) recopilacion.get("esPublica")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public int obtenerRecopilacionesUsuarioCount(int idUsuario) {
+        int count = 0;
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idUsuario") == idUsuario) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public List<Integer> obtenerCancionesDeRecopilacion(int idRecopilacion) {
+        for (Map<String, Object> recopilacion : recopilaciones) {
+            if ((int) recopilacion.get("idRecopilacion") == idRecopilacion) {
+                @SuppressWarnings("unchecked")
+                List<Integer> canciones = (List<Integer>) recopilacion.get("canciones");
+                return new ArrayList<>(canciones);
+            }
+        }
+        return new ArrayList<>();
+    }
+    
+    private String formatearRecopilacion(Map<String, Object> recopilacion) {
+        return String.format(
+            "Recopilacion{id=%d, nombre='%s', usuario=%d, pública=%s, canciones=%d, fecha=%s}",
+            recopilacion.get("idRecopilacion"),
+            recopilacion.get("nombre"),
+            recopilacion.get("idUsuario"),
+            recopilacion.get("esPublica"),
+            ((List<?>) recopilacion.get("canciones")).size(),
+            recopilacion.get("fechaCreacion")
+        );
+    }
+    
+    public void mostrarDetallesRecopilacion(int idRecopilacion) {
+        Map<String, Object> recopilacion = buscarRecopilacionPorId(idRecopilacion);
+        if (recopilacion != null) {
+            System.out.println("\n--- DETALLES DE RECOPILACIÓN ---");
+            System.out.println("ID: " + recopilacion.get("idRecopilacion"));
+            System.out.println("Nombre: " + recopilacion.get("nombre"));
+            System.out.println("Usuario: " + recopilacion.get("idUsuario"));
+            System.out.println("Pública: " + recopilacion.get("esPublica"));
+            System.out.println("Fecha: " + recopilacion.get("fechaCreacion"));
+            
+            @SuppressWarnings("unchecked")
+            List<Integer> canciones = (List<Integer>) recopilacion.get("canciones");
+            System.out.println("Canciones: " + canciones.size() + " canciones");
+            System.out.println("IDs de canciones: " + canciones);
+        } else {
+            System.out.println("❌ Recopilación no encontrada");
+        }
+    }
+}
