@@ -1,0 +1,163 @@
+package com.polisong.dao;
+
+import com.polisong.models.MP3;
+import com.polisong.models.Vinilo;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductoDAO {
+    private static List<Object> productos = new ArrayList<>();
+    private static int nextId = 1;
+    
+    static {
+        // Productos de ejemplo (MP3 y Vinilos)
+        productos.add(new MP3("Billie Jean", "00:04:54", 8.5f, 320, "Pop", 1.99f));
+        productos.add(new MP3("Bohemian Rhapsody", "00:05:55", 9.8f, 320, "Rock", 2.49f));
+        productos.add(new Vinilo(2, "Thriller", "Michael Jackson", 1982, 5, 49.99f));
+        productos.add(new Vinilo(2, "The Dark Side of the Moon", "Pink Floyd", 1973, 3, 59.99f));
+        
+        // Asignar IDs
+        for (int i = 0; i < productos.size(); i++) {
+            Object producto = productos.get(i);
+            if (producto instanceof MP3) {
+                ((MP3) producto).setIdMp3(i + 1);
+            } else if (producto instanceof Vinilo) {
+                ((Vinilo) producto).setIdVinilo(i + 1);
+            }
+        }
+        nextId = productos.size() + 1;
+    }
+    
+    public boolean insertarProducto(Object producto) {
+        try {
+            if (producto instanceof MP3) {
+                ((MP3) producto).setIdMp3(nextId++);
+            } else if (producto instanceof Vinilo) {
+                ((Vinilo) producto).setIdVinilo(nextId++);
+            }
+            productos.add(producto);
+            System.out.println("✅ Producto agregado al catálogo");
+            return true;
+        } catch (Exception e) {
+            System.out.println("❌ Error al insertar producto: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public void obtenerTodosProductos() {
+        System.out.println("\n--- CATÁLOGO COMPLETO DE PRODUCTOS ---");
+        if (productos.isEmpty()) {
+            System.out.println("No hay productos disponibles");
+        } else {
+            for (Object producto : productos) {
+                System.out.println(producto);
+            }
+        }
+    }
+    
+    public List<Object> obtenerProductosPorTipo(String tipo) {
+        List<Object> resultados = new ArrayList<>();
+        for (Object producto : productos) {
+            if (tipo.equalsIgnoreCase("mp3") && producto instanceof MP3) {
+                resultados.add(producto);
+            } else if (tipo.equalsIgnoreCase("vinilo") && producto instanceof Vinilo) {
+                resultados.add(producto);
+            }
+        }
+        return resultados;
+    }
+    
+    public Object buscarProductoPorId(int idProducto) {
+        for (Object producto : productos) {
+            if (producto instanceof MP3 && ((MP3) producto).getIdMp3() == idProducto) {
+                return producto;
+            } else if (producto instanceof Vinilo && ((Vinilo) producto).getIdVinilo() == idProducto) {
+                return producto;
+            }
+        }
+        return null;
+    }
+    
+    public List<Object> buscarProductosPorNombre(String nombre) {
+        List<Object> resultados = new ArrayList<>();
+        for (Object producto : productos) {
+            String nombreProducto = "";
+            if (producto instanceof MP3) {
+                nombreProducto = ((MP3) producto).getNombre();
+            } else if (producto instanceof Vinilo) {
+                nombreProducto = ((Vinilo) producto).getNombre();
+            }
+            
+            if (nombreProducto.toLowerCase().contains(nombre.toLowerCase())) {
+                resultados.add(producto);
+            }
+        }
+        return resultados;
+    }
+    
+    public List<Object> obtenerProductosPorPrecio(float precioMaximo) {
+        List<Object> resultados = new ArrayList<>();
+        for (Object producto : productos) {
+            float precio = 0.0f;
+            if (producto instanceof MP3) {
+                precio = ((MP3) producto).getPrecio();
+            } else if (producto instanceof Vinilo) {
+                precio = ((Vinilo) producto).getPrecio();
+            }
+            
+            if (precio <= precioMaximo) {
+                resultados.add(producto);
+            }
+        }
+        return resultados;
+    }
+    
+    public boolean actualizarPrecioProducto(int idProducto, float nuevoPrecio) {
+        for (Object producto : productos) {
+            if (producto instanceof MP3 && ((MP3) producto).getIdMp3() == idProducto) {
+                ((MP3) producto).setPrecio(nuevoPrecio);
+                System.out.println("✅ Precio de MP3 actualizado");
+                return true;
+            } else if (producto instanceof Vinilo && ((Vinilo) producto).getIdVinilo() == idProducto) {
+                ((Vinilo) producto).setPrecio(nuevoPrecio);
+                System.out.println("✅ Precio de vinilo actualizado");
+                return true;
+            }
+        }
+        System.out.println("❌ Producto no encontrado");
+        return false;
+    }
+    
+    public boolean eliminarProducto(int idProducto) {
+        for (int i = 0; i < productos.size(); i++) {
+            Object producto = productos.get(i);
+            if (producto instanceof MP3 && ((MP3) producto).getIdMp3() == idProducto) {
+                productos.remove(i);
+                System.out.println("✅ MP3 eliminado del catálogo");
+                return true;
+            } else if (producto instanceof Vinilo && ((Vinilo) producto).getIdVinilo() == idProducto) {
+                productos.remove(i);
+                System.out.println("✅ Vinilo eliminado del catálogo");
+                return true;
+            }
+        }
+        System.out.println("❌ Producto no encontrado");
+        return false;
+    }
+    
+    public int obtenerTotalProductos() {
+        return productos.size();
+    }
+    
+    public int obtenerTotalPorTipo(String tipo) {
+        int count = 0;
+        for (Object producto : productos) {
+            if (tipo.equalsIgnoreCase("mp3") && producto instanceof MP3) {
+                count++;
+            } else if (tipo.equalsIgnoreCase("vinilo") && producto instanceof Vinilo) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
