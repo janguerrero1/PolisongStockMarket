@@ -9,12 +9,10 @@ public class UsuarioDAO {
     private static int nextId = 1;
     
     static {
-        // Datos de ejemplo con saldo 0
         usuarios.add(new Usuario("Juan Pérez", "juan@email.com", "123", "usuario", 123456));
         usuarios.add(new Usuario("María García", "maria@email.com", "123", "proveedor", 654321));
         usuarios.add(new Usuario("Admin", "admin@email.com", "admin", "admin", 999999));
         
-        // Asignar IDs
         for (int i = 0; i < usuarios.size(); i++) {
             usuarios.get(i).setIdUsuario(i + 1);
         }
@@ -72,5 +70,27 @@ public class UsuarioDAO {
             }
         }
         return null;
+    }
+    
+    public boolean eliminarUsuario(int idUsuario) {
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getIdUsuario() == idUsuario) {
+                usuarios.remove(i);
+                System.out.println("✅ Usuario eliminado");
+                return true;
+            }
+        }
+        System.out.println("❌ Usuario no encontrado");
+        return false;
+    }
+    
+    public List<Usuario> obtenerUsuariosPorRol(String rol) {
+        List<Usuario> usuariosRol = new ArrayList<>();
+        for (Usuario usuario : usuarios) {
+            if (usuario.getRol().equalsIgnoreCase(rol)) {
+                usuariosRol.add(usuario);
+            }
+        }
+        return usuariosRol;
     }
 }
