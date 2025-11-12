@@ -1,0 +1,146 @@
+package com.polisong.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PagoDAO {
+    private static List<String> pagos = new ArrayList<>();
+    private static int nextId = 1;
+    
+    static {
+        // Pagos de ejemplo
+        pagos.add("Pago{idPago=1, metodo='tarjeta', monto=25.50, estado='completado', fecha='2024-01-15'}");
+        pagos.add("Pago{idPago=2, metodo='paypal', monto=59.99, estado='pendiente', fecha='2024-01-16'}");
+        pagos.add("Pago{idPago=3, metodo='transferencia', monto=15.75, estado='completado', fecha='2024-01-14'}");
+    }
+    
+    public boolean crearPago(String metodo, float monto, String estado) {
+        try {
+            String pago = "Pago{idPago=" + nextId + 
+                         ", metodo='" + metodo + 
+                         "', monto=" + monto + 
+                         ", estado='" + estado + 
+                         "', fecha='" + java.time.LocalDate.now() + "'}";
+            pagos.add(pago);
+            nextId++;
+            System.out.println("✅ Pago creado: " + pago);
+            return true;
+        } catch (Exception e) {
+            System.out.println("❌ Error al crear pago: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public void obtenerTodosPagos() {
+        System.out.println("\n--- HISTORIAL DE PAGOS ---");
+        if (pagos.isEmpty()) {
+            System.out.println("No hay pagos registrados");
+        } else {
+            for (String pago : pagos) {
+                System.out.println(pago);
+            }
+        }
+    }
+    
+    public void obtenerPagosPorUsuario(int idUsuario) {
+        System.out.println("\n--- MIS PAGOS ---");
+        boolean encontrados = false;
+        for (String pago : pagos) {
+            // Simulamos que algunos pagos pertenecen al usuario
+            if (pago.contains("idPago=" + idUsuario) || pago.contains("monto=" + (idUsuario * 10))) {
+                System.out.println(pago);
+                encontrados = true;
+            }
+        }
+        if (!encontrados) {
+            System.out.println("No tienes pagos registrados");
+        }
+    }
+    
+    public boolean actualizarEstadoPago(int idPago, String nuevoEstado) {
+        for (int i = 0; i < pagos.size(); i++) {
+            if (pagos.get(i).contains("idPago=" + idPago)) {
+                String pagoActualizado = pagos.get(i).replaceFirst("estado='[^']*'", "estado='" + nuevoEstado + "'");
+                pagos.set(i, pagoActualizado);
+                System.out.println("✅ Estado del pago actualizado a: " + nuevoEstado);
+                return true;
+            }
+        }
+        System.out.println("❌ Pago no encontrado");
+        return false;
+    }
+    
+    public List<String> obtenerPagosPorEstado(String estado) {
+        List<String> resultados = new ArrayList<>();
+        for (String pago : pagos) {
+            if (pago.contains("estado='" + estado + "'")) {
+                resultados.add(pago);
+            }
+        }
+        return resultados;
+    }
+    
+    public List<String> obtenerPagosPorMetodo(String metodo) {
+        List<String> resultados = new ArrayList<>();
+        for (String pago : pagos) {
+            if (pago.contains("metodo='" + metodo + "'")) {
+                resultados.add(pago);
+            }
+        }
+        return resultados;
+    }
+    
+    public float obtenerTotalRecaudado() {
+        float total = 0.0f;
+        for (String pago : pagos) {
+            // Extraer monto del string del pago
+            if (pago.contains("estado='completado'")) {
+                try {
+                    int start = pago.indexOf("monto=") + 6;
+                    int end = pago.indexOf(",", start);
+                    String montoStr = pago.substring(start, end);
+                    total += Float.parseFloat(montoStr);
+                } catch (Exception e) {
+                    System.out.println("Error al procesar pago: " + pago);
+                }
+            }
+        }
+        return total;
+    }
+    
+    public boolean eliminarPago(int idPago) {
+        for (int i = 0; i < pagos.size(); i++) {
+            if (pagos.get(i).contains("idPago=" + idPago)) {
+                pagos.remove(i);
+                System.out.println("✅ Pago eliminado");
+                return true;
+            }
+        }
+        System.out.println("❌ Pago no encontrado");
+        return false;
+    }
+    
+    public int obtenerTotalPagos() {
+        return pagos.size();
+    }
+    
+    public int obtenerPagosCompletados() {
+        int count = 0;
+        for (String pago : pagos) {
+            if (pago.contains("estado='completado'")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public int obtenerPagosPendientes() {
+        int count = 0;
+        for (String pago : pagos) {
+            if (pago.contains("estado='pendiente'")) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
