@@ -9,7 +9,6 @@ public class MP3DAO {
     private static int nextId = 1;
     
     static {
-        // Datos de ejemplo
         mp3s.add(new MP3("Billie Jean", "00:04:54", 8.5f, 320, "Pop", 1.99f));
         mp3s.add(new MP3("Bohemian Rhapsody", "00:05:55", 9.8f, 320, "Rock", 2.49f));
         mp3s.add(new MP3("Shape of You", "00:03:53", 7.2f, 256, "Pop", 1.79f));
@@ -91,5 +90,37 @@ public class MP3DAO {
             }
         }
         return null;
+    }
+    
+    public List<MP3> obtenerMP3sPorCalidad(int calidadMinima) {
+        List<MP3> resultados = new ArrayList<>();
+        for (MP3 mp3 : mp3s) {
+            if (mp3.getCalidad() >= calidadMinima) {
+                resultados.add(mp3);
+            }
+        }
+        return resultados;
+    }
+    
+    public boolean eliminarMP3(int idMp3) {
+        for (int i = 0; i < mp3s.size(); i++) {
+            if (mp3s.get(i).getIdMp3() == idMp3) {
+                mp3s.remove(i);
+                System.out.println("✅ MP3 eliminado");
+                return true;
+            }
+        }
+        System.out.println("❌ MP3 no encontrado");
+        return false;
+    }
+    
+    public List<MP3> obtenerMP3sPorPrecio(float precioMaximo) {
+        List<MP3> resultados = new ArrayList<>();
+        for (MP3 mp3 : mp3s) {
+            if (mp3.getPrecio() <= precioMaximo) {
+                resultados.add(mp3);
+            }
+        }
+        return resultados;
     }
 }
