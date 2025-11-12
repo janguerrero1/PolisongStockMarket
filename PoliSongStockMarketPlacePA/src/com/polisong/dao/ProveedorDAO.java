@@ -9,7 +9,6 @@ public class ProveedorDAO {
     private static int nextId = 1;
     
     static {
-        // Datos de ejemplo
         proveedores.add(new Proveedor(2, "Vinilos Clásicos", "ventas@vinilosclasicos.com", "555-1234", 123456));
         
         for (int i = 0; i < proveedores.size(); i++) {
@@ -67,6 +66,27 @@ public class ProveedorDAO {
             if (proveedor.getIdProveedor() == idProveedor) {
                 proveedor.setCorreo(nuevoCorreo);
                 System.out.println("✅ Correo actualizado para: " + proveedor.getNombreTienda());
+                return true;
+            }
+        }
+        System.out.println("❌ Proveedor no encontrado");
+        return false;
+    }
+    
+    public Proveedor buscarProveedorPorId(int idProveedor) {
+        for (Proveedor proveedor : proveedores) {
+            if (proveedor.getIdProveedor() == idProveedor) {
+                return proveedor;
+            }
+        }
+        return null;
+    }
+    
+    public boolean eliminarProveedor(int idProveedor) {
+        for (int i = 0; i < proveedores.size(); i++) {
+            if (proveedores.get(i).getIdProveedor() == idProveedor) {
+                proveedores.remove(i);
+                System.out.println("✅ Proveedor eliminado");
                 return true;
             }
         }
