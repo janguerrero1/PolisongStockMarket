@@ -8,18 +8,20 @@ public class PedidoDAO {
     private static int nextId = 1;
     
     static {
-        // Datos de ejemplo
-        pedidos.add("Pedido{idPedido=1, idUsuario=1, estado='entregado', total=25.50}");
-        pedidos.add("Pedido{idPedido=2, idUsuario=1, estado='enviado', total=59.99}");
+        pedidos.add("Pedido{idPedido=1, idUsuario=1, estado='entregado', total=25.50, fecha='2024-01-15'}");
+        pedidos.add("Pedido{idPedido=2, idUsuario=1, estado='enviado', total=59.99, fecha='2024-01-16'}");
+        pedidos.add("Pedido{idPedido=3, idUsuario=2, estado='pendiente', total=15.75, fecha='2024-01-17'}");
     }
     
     public boolean crearPedido(int idUsuario, int idPago, String estado) {
         try {
-            String pedido = "Pedido{idPedido=" + nextId++ + 
+            String pedido = "Pedido{idPedido=" + nextId + 
                            ", idUsuario=" + idUsuario + 
+                           ", idPago=" + idPago +
                            ", estado='" + estado + 
                            "', fecha='" + java.time.LocalDate.now() + "'}";
             pedidos.add(pedido);
+            nextId++;
             System.out.println("✅ Pedido creado: " + pedido);
             return true;
         } catch (Exception e) {
@@ -102,4 +104,50 @@ public class PedidoDAO {
             System.out.println("No hay pedidos pendientes");
         }
     }
+    
+    public List<String> obtenerPedidosPorEstado(String estado) {
+        List<String> resultados = new ArrayList<>();
+        for (String pedido : pedidos) {
+            if (pedido.contains("estado='" + estado + "'")) {
+                resultados.add(pedido);
+            }
+        }
+        return resultados;
+    }
+    
+    public boolean cancelarPedido(int idPedido) {
+        for (int i = 0; i < pedidos.size(); i++) {
+            if (pedidos.get(i).contains("idPedido=" + idPedido)) {
+                String pedidoActualizado = pedidos.get(i).replaceFirst("estado='[^']*'", "estado='cancelado'");
+                pedidos.set(i, pedidoActualizado);
+                System.out.println("✅ Pedido cancelado");
+                return true;
+            }
+        }
+        System.out.println("❌ Pedido no encontrado");
+        return false;
+    }
+    
+    public int obtenerTotalPedidos() {
+        return pedidos.size();
+    }
+    
+    public int obtenerPedidosPorEstadoCount(String estado) {
+        int count = 0;
+        for (String pedido : pedidos) {
+            if (pedido.contains("estado='" + estado + "'")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public String obtenerPedidoPorId(int idPedido) {
+        for (String pedido : pedidos) {
+            if (pedido.contains("idPedido=" + idPedido)) {
+                return pedido;
+            }
+        }
+        return null;
+    }
 }
