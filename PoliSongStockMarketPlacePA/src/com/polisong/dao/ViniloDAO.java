@@ -9,7 +9,6 @@ public class ViniloDAO {
     private static int nextId = 1;
     
     static {
-        // Datos de ejemplo
         vinilos.add(new Vinilo(2, "Thriller", "Michael Jackson", 1982, 5, 49.99f));
         vinilos.add(new Vinilo(2, "The Dark Side of the Moon", "Pink Floyd", 1973, 3, 59.99f));
         vinilos.add(new Vinilo(2, "Abbey Road", "The Beatles", 1969, 2, 45.99f));
@@ -90,5 +89,37 @@ public class ViniloDAO {
             }
         }
         return null;
+    }
+    
+    public List<Vinilo> buscarVinilosPorArtista(String artista) {
+        List<Vinilo> resultados = new ArrayList<>();
+        for (Vinilo vinilo : vinilos) {
+            if (vinilo.getArtista().toLowerCase().contains(artista.toLowerCase())) {
+                resultados.add(vinilo);
+            }
+        }
+        return resultados;
+    }
+    
+    public boolean eliminarVinilo(int idVinilo) {
+        for (int i = 0; i < vinilos.size(); i++) {
+            if (vinilos.get(i).getIdVinilo() == idVinilo) {
+                vinilos.remove(i);
+                System.out.println("✅ Vinilo eliminado");
+                return true;
+            }
+        }
+        System.out.println("❌ Vinilo no encontrado");
+        return false;
+    }
+    
+    public List<Vinilo> obtenerVinilosPorAnio(int anio) {
+        List<Vinilo> resultados = new ArrayList<>();
+        for (Vinilo vinilo : vinilos) {
+            if (vinilo.getAnio() == anio) {
+                resultados.add(vinilo);
+            }
+        }
+        return resultados;
     }
 }
